@@ -1,0 +1,38 @@
+# Literature Knowledge Base Configuration
+# Copy this file to config.yaml and customize for your setup
+
+# Root directory containing your PDF library
+# Organized as: <pdf_root>/YYYY/<Publication>/<Paper Title>.pdf
+pdf_root: "/home/azurin/Documents/Papers"
+
+# Root directory containing your note files
+# Organized as: <notes_root>/YYYY/<Publication>/<Paper Title>.mendeley.md
+notes_root: "/home/azurin/Documents/Notes"
+
+# Path to the SQLite database file
+index_path: "/home/azurin/.openclaw/workspace/project/Yang_Document/Literature/kb/index.sqlite"
+
+# Path to ChromaDB vector store (for semantic search)
+vector_path: "/home/azurin/.openclaw/workspace/project/Yang_Document/Literature/kb/chroma"
+
+# Maximum PDF file size to process (in MB)
+max_pdf_mb: 200
+
+# Text chunking configuration
+chunking:
+  # Characters per chunk for PDF text
+  pdf_chunk_chars: 2000
+  
+  # Characters per chunk for note files
+  note_chunk_chars: 1500
+
+# Phase 2: Semantic search configuration
+semantic_search:
+  # Embedding model to use (sentence-transformers)
+  # Options: "all-MiniLM-L6-v2" (fast, good quality), 
+  #          "all-mpnet-base-v2" (better quality, slower)
+  embedding_model: "all-MiniLM-L6-v2"
+  
+  # Weight for semantic vs keyword (BM25) scoring
+  # 0.0 = BM25 only, 1.0 = semantic only, 0.5 = equal weight
+  semantic_weight: 0.5

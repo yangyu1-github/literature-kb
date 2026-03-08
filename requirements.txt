@@ -1,0 +1,21 @@
+# Literature Knowledge Base Dependencies
+
+# Database
+sqlite3  # built-in, but noted for clarity
+
+# PDF text extraction
+pymupdf>=1.23.0  # fitz - fast PDF text extraction
+
+# MCP server
+mcp>=1.0.0  # Model Context Protocol SDK
+
+# YAML parsing for config
+pyyaml>=6.0
+
+# Phase 2: Semantic search
+sentence-transformers>=2.2.0  # Generate text embeddings
+chromadb>=0.4.0               # Vector database for similarity search
+numpy>=1.24.0                 # Array operations for hybrid scoring
+
+# BibTeX parsing (optional but recommended)
+bibtexparser>=1.4.0  # Robust BibTeX parsing (falls back to built-in parser)
