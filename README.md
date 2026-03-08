@@ -2,7 +2,13 @@
 
 > A local literature management system that indexes PDF papers alongside BibTeX-based reading notes (stored in the `annote` field), making them searchable through OpenClaw via MCP (Model Context Protocol). Supports hybrid retrieval from both documents and annotations, with structured citations for research workflows.
 
-**Current Status (2026-03-08):** ✅ **5,798 papers indexed** | 12,489 chunks | 37 MB database | MCP server ready
+**Current Status (2026-03-08):** ✅ **Phase 3 Complete** | 5,798 papers indexed | 12,489 chunks | 37 MB database | Enhanced MCP server ready
+
+**Phase 3 Features:**
+- 🔍 Duplicate detection by DOI/title
+- 📝 Incremental refresh (skip unchanged files)
+- ✏️ Note editing with history tracking
+- 🛠️ Enhanced MCP tools
 
 ## Quick Start
 
@@ -155,23 +161,28 @@ The `hybrid_score` combines BM25 (keyword) and semantic similarity. You can also
 
 ```
 Literature/
-├── README.md                 # This file
-├── config.yaml               # Your configuration (PDF + BibTeX paths)
-├── config.example.yaml       # Configuration template
-├── requirements.txt          # Python dependencies
-├── IMPLEMENTATION.md         # Technical implementation details
+├── README.md                       # This file
+├── config.yaml                     # Your configuration (PDF + BibTeX paths)
+├── config.example.yaml             # Configuration template
+├── requirements.txt                # Python dependencies
+├── IMPLEMENTATION.md               # Technical implementation details
 ├── schema/
-│   └── 001_initial.sql       # Database schema (SQLite + FTS5)
+│   └── 001_initial.sql             # Database schema (SQLite + FTS5)
 ├── mcp_server/
-│   ├── database.py           # Database operations
-│   ├── ingestion.py          # Markdown notes ingestion (original)
-│   ├── bibtex_ingestion.py   # BibTeX ingestion (new)
-│   └── server.py             # MCP server implementation
+│   ├── database.py                 # Database operations (original)
+│   ├── enhanced_database.py        # **Phase 3: Enhanced database with duplicates/history**
+│   ├── ingestion.py                # Markdown notes ingestion (original)
+│   ├── bibtex_ingestion.py         # BibTeX ingestion
+│   ├── enhanced_bibtex_ingestion.py # **Phase 3: Enhanced with duplicate detection**
+│   ├── server.py                   # MCP server (original)
+│   └── enhanced_server.py          # **Phase 3: Enhanced MCP server with new tools**
 ├── ingest/
-│   ├── ingest.py             # Standalone CLI for Markdown notes
-│   └── ingest_bibtex.py      # Standalone CLI for BibTeX
+│   ├── ingest.py                   # Standalone CLI for Markdown notes
+│   ├── ingest_bibtex.py            # Standalone CLI for BibTeX
+│   └── ingest_enhanced.py          # **Phase 3: Enhanced CLI with all features**
 └── tests/
-    └── test_basic.py         # Unit tests
+    ├── test_basic.py               # Unit tests
+    └── test_semantic.py            # Semantic search tests
 ```
 
 ## Configuration
@@ -230,6 +241,44 @@ python mcp_server/server.py --config config.yaml
 # The server will listen for MCP requests from OpenClaw
 ```
 
+### Phase 3: Enhanced Ingestion with Duplicate Detection
+
+```bash
+# Use the enhanced ingester with Phase 3 features
+python ingest/ingest_enhanced.py --config config.yaml --stats
+
+# Force full refresh (ignore incremental check)
+python ingest/ingest_enhanced.py --config config.yaml --full-refresh
+
+# Include suspected duplicates (don't skip them)
+python ingest/ingest_enhanced.py --config config.yaml --include-duplicates
+
+# Show detected duplicates after ingestion
+python ingest/ingest_enhanced.py --config config.yaml --show-duplicates
+```
+
+### Running the Enhanced MCP Server (Phase 3)
+
+```bash
+# Start the enhanced server with new tools
+python mcp_server/enhanced_server.py --config config.yaml
+```
+
+### Phase 3 MCP Tools
+
+| Tool | Purpose |
+|------|---------|
+| `kb_search` | Full-text search with filters |
+| `kb_get_document` | Get document metadata |
+| `kb_get_note` | Retrieve note content |
+| `kb_get_pdf_text` | Extract PDF pages |
+| `kb_update_note` | **Update note content** (with history) |
+| `kb_get_note_history` | **View note edit history** |
+| `kb_find_duplicates` | **List detected duplicates** |
+| `kb_check_duplicate` | **Check if paper exists** by DOI |
+| `kb_refresh` | **Incremental refresh** |
+| `kb_stats` | Show database statistics |
+
 ### Testing Search
 
 ```python
@@ -284,11 +333,16 @@ for hit in results:
 - PDF matching by filename/title similarity
 - Abstract fallback when no annotations present
 
-### Phase 3 (Future)
+### Phase 3 ✅ (Complete - Enhanced Features)
+- **Duplicate detection**: Automatic detection by DOI and title/year matching
+- **Incremental refresh**: Only re-index when BibTeX file changes
+- **Note editing**: Update notes via MCP with edit history tracking
+- **Enhanced MCP tools**: New tools for duplicate checking and note management
+
+### Phase 4 (Future)
 - Hybrid search: BM25 + semantic embeddings
-- Incremental refresh with file watching
-- Duplicate detection by DOI
-- Note editing via MCP tools
+- File watching for automatic refresh
+- Web interface for browsing library
 
 ## Requirements
 
