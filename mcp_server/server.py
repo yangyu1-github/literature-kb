@@ -366,7 +366,7 @@ class LiteratureMCPServer:
                 note_chunk_size=self.config['chunking']['note_chunk_chars']
             )
         else:
-            # Original Markdown notes mode
+            # Deprecated legacy Markdown-note mode
             notes_root = scan_config.get('notes_root', self.config['notes_root'])
             
             if self.enable_semantic and self.hybrid_searcher:

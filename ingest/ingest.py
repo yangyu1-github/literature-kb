@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Standalone ingestion script for Literature Knowledge Base.
+Deprecated standalone ingestion script for the legacy Markdown-note workflow.
 Usage: python ingest.py [--config config.yaml] [--pdf-root PATH] [--notes-root PATH]
 """
 
@@ -24,7 +24,7 @@ def load_config(config_path: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Ingest literature library into knowledge base"
+        description="Deprecated: ingest literature from legacy Markdown notes into the knowledge base"
     )
     parser.add_argument(
         "--config", "-c",
@@ -49,6 +49,9 @@ def main():
     )
     
     args = parser.parse_args()
+
+    print("DEPRECATED: this CLI targets the legacy Markdown-note workflow.")
+    print("Use `python ingest/ingest_bibtex.py --config config.yaml --stats` for the supported BibTeX workflow.\n")
     
     # Load config or use defaults
     config = {

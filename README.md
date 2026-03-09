@@ -1,14 +1,19 @@
-# Local Literature Knowledge Base for OpenClaw (PDF + BibTeX Notes) via MCP
+# Local Literature Knowledge Base for OpenClaw (BibTeX-First, Phase 4) via MCP
 
-> A local literature management system that indexes PDF papers alongside BibTeX-based reading notes (stored in the `annote` field), making them searchable through OpenClaw via MCP (Model Context Protocol). Supports hybrid retrieval from both documents and annotations, with structured citations for research workflows.
+> A local BibTeX-first literature knowledge base that indexes PDFs and Mendeley-exported notes from the `annote` field into a searchable local SQLite/MCP service. Phase 4 adds research-workflow tools for browsing the library, exporting citations, and finding related papers.
 
-**Current Status (2026-03-08):** ✅ **Phase 3 Complete** | 5,798 papers indexed | 12,489 chunks | 37 MB database | Enhanced MCP server ready
+**Current Status (2026-03-09):** ✅ **Phase 4 Expanded** | 5,798 papers indexed | 12,489 chunks | 37 MB database | Enhanced MCP server ready
 
 **Phase 3 Features:**
 - 🔍 Duplicate detection by DOI/title
 - 📝 Incremental refresh (skip unchanged files)
 - ✏️ Note editing with history tracking
 - 🛠️ Enhanced MCP tools
+
+**Phase 4 Features:**
+- 📚 Library browsing by year, venue, author, tag, or title
+- 📖 Citation export in `apa`, `short`, or `bibtex` formats
+- 🔗 Related-paper discovery from shared metadata
 
 ## Quick Start
 
@@ -28,17 +33,6 @@ python ingest/ingest_bibtex.py --config config.yaml --stats
 
 # 4. Start the MCP server (for OpenClaw integration)
 python mcp_server/server.py --config config.yaml
-```
-
-## Alternative: Markdown Notes (Original Mode)
-
-If you prefer separate Markdown note files with YAML front matter:
-
-```bash
-# Use the original ingest script
-cp config.example.yaml config.yaml
-# Edit to set notes_root to your .mendeley.md files directory
-python ingest/ingest.py --config config.yaml --stats
 ```
 
 ## What This Is
@@ -119,6 +113,9 @@ The server exposes these tools to OpenClaw:
 | `kb_get_note` | Retrieve full note content |
 | `kb_get_pdf_text` | Extract specific PDF pages |
 | `kb_refresh` | Update the index |
+| `kb_list_documents` | Browse the library by metadata |
+| `kb_get_citation` | Format a citation for a paper |
+| `kb_find_related` | Find related papers |
 | `kb_stats` | Show database statistics |
 
 ### Example: kb_search (with hybrid scoring)
@@ -149,7 +146,7 @@ The server exposes these tools to OpenClaw:
       "snippet": "[Page 1] Summary: Introduces the Transformer architecture...",
       "locator": {"page": 1},
       "pdf_path": "/home/.../Attention Is All You Need.pdf",
-      "note_path": "/home/.../Attention Is All You Need.mendeley.md"
+      "note_path": "/home/.../My_Collection.bib"
     }
   ]
 }
@@ -169,21 +166,26 @@ Literature/
 ├── schema/
 │   └── 001_initial.sql             # Database schema (SQLite + FTS5)
 ├── mcp_server/
-│   ├── database.py                 # Database operations (original)
-│   ├── enhanced_database.py        # **Phase 3: Enhanced database with duplicates/history**
-│   ├── ingestion.py                # Markdown notes ingestion (original)
+│   ├── database.py                 # Database operations
+│   ├── enhanced_database.py        # **Phase 4: Enhanced database with browse/citation/related docs**
 │   ├── bibtex_ingestion.py         # BibTeX ingestion
 │   ├── enhanced_bibtex_ingestion.py # **Phase 3: Enhanced with duplicate detection**
-│   ├── server.py                   # MCP server (original)
-│   └── enhanced_server.py          # **Phase 3: Enhanced MCP server with new tools**
+│   ├── ingestion.py                # Deprecated legacy Markdown-note ingestion
+│   ├── server.py                   # MCP server
+│   └── enhanced_server.py          # **Phase 4: Enhanced MCP server with workflow tools**
 ├── ingest/
-│   ├── ingest.py                   # Standalone CLI for Markdown notes
 │   ├── ingest_bibtex.py            # Standalone CLI for BibTeX
-│   └── ingest_enhanced.py          # **Phase 3: Enhanced CLI with all features**
+│   ├── ingest_enhanced.py          # **Phase 3: Enhanced CLI with all features**
+│   └── ingest.py                   # Deprecated legacy Markdown-note CLI
 └── tests/
     ├── test_basic.py               # Unit tests
-    └── test_semantic.py            # Semantic search tests
+    ├── test_semantic.py            # Semantic search tests
+    └── test_phase4.py              # Browse/citation/related-doc tests
 ```
+
+## Deprecation Note
+
+The Markdown note workflow (`ingest/ingest.py`, `mcp_server/ingestion.py`, and related helpers) is deprecated. The supported path for this repository is BibTeX ingestion from `My_Collection.bib` with notes read from the `annote` field.
 
 ## Configuration
 
@@ -257,14 +259,14 @@ python ingest/ingest_enhanced.py --config config.yaml --include-duplicates
 python ingest/ingest_enhanced.py --config config.yaml --show-duplicates
 ```
 
-### Running the Enhanced MCP Server (Phase 3)
+### Running the Enhanced MCP Server
 
 ```bash
 # Start the enhanced server with new tools
 python mcp_server/enhanced_server.py --config config.yaml
 ```
 
-### Phase 3 MCP Tools
+### Enhanced MCP Tools
 
 | Tool | Purpose |
 |------|---------|
@@ -277,7 +279,24 @@ python mcp_server/enhanced_server.py --config config.yaml
 | `kb_find_duplicates` | **List detected duplicates** |
 | `kb_check_duplicate` | **Check if paper exists** by DOI |
 | `kb_refresh` | **Incremental refresh** |
+| `kb_list_documents` | **Browse documents** by metadata filters |
+| `kb_get_citation` | **Export citations** for writing workflows |
+| `kb_find_related` | **Find related papers** from shared metadata |
 | `kb_stats` | Show database statistics |
+
+### Phase 4 Workflow Examples
+
+```json
+{"tool":"kb_list_documents","arguments":{"filters":{"venue":"Nature Catalysis","year":2024},"limit":20}}
+```
+
+```json
+{"tool":"kb_get_citation","arguments":{"doc_key":"10.1000/alpha","style":"apa"}}
+```
+
+```json
+{"tool":"kb_find_related","arguments":{"doc_key":"10.1000/alpha","limit":5}}
+```
 
 ### Testing Search
 
@@ -339,8 +358,13 @@ for hit in results:
 - **Note editing**: Update notes via MCP with edit history tracking
 - **Enhanced MCP tools**: New tools for duplicate checking and note management
 
-### Phase 4 (Future)
-- Hybrid search: BM25 + semantic embeddings
+### Phase 4 ✅ (Complete - Research Workflow Tools)
+- **Library browsing**: Filter documents by year, venue, author, tag, or title
+- **Citation export**: Format citations as `apa`, `short`, or `bibtex`
+- **Related-paper discovery**: Rank nearby papers from shared metadata
+
+### Phase 5 (Future)
+- Stronger hybrid ranking across the enhanced server path
 - File watching for automatic refresh
 - Web interface for browsing library
 

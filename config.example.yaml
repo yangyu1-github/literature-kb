@@ -5,9 +5,8 @@
 # Organized as: <pdf_root>/YYYY/<Publication>/<Paper Title>.pdf
 pdf_root: "/home/azurin/Documents/Papers"
 
-# Root directory containing your note files
-# Organized as: <notes_root>/YYYY/<Publication>/<Paper Title>.mendeley.md
-notes_root: "/home/azurin/Documents/Notes"
+# Path to your BibTeX file with annotations in the annote field
+bibtex_path: "/home/azurin/Documents/My_Collection.bib"
 
 # Path to the SQLite database file
 index_path: "/home/azurin/.openclaw/workspace/project/Yang_Document/Literature/kb/index.sqlite"
@@ -23,7 +22,7 @@ chunking:
   # Characters per chunk for PDF text
   pdf_chunk_chars: 2000
   
-  # Characters per chunk for note files
+  # Characters per chunk for BibTeX note/annotation text
   note_chunk_chars: 1500
 
 # Phase 2: Semantic search configuration

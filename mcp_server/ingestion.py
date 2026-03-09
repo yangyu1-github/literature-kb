@@ -1,5 +1,5 @@
 """
-Ingestion pipeline for Literature Knowledge Base.
+Deprecated ingestion pipeline for the legacy Markdown-note workflow.
 Scans PDF and note directories, extracts content, and indexes into database.
 """
 
@@ -27,7 +27,7 @@ class NoteMetadata:
 
 
 class NoteParser:
-    """Parse Markdown note files with YAML front matter."""
+    """Parse legacy Markdown note files with YAML front matter."""
     
     @staticmethod
     def parse(note_path: Path) -> Tuple[NoteMetadata, str]:
@@ -182,7 +182,7 @@ class NoteChunker:
 
 
 class LibraryIngester:
-    """Main ingestion orchestrator."""
+    """Main ingester for the deprecated Markdown-note workflow."""
     
     def __init__(self, db, pdf_root: str, notes_root: str,
                  pdf_chunk_size: int = 2000, note_chunk_size: int = 1500):
